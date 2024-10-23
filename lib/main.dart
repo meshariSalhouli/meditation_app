@@ -1,20 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:meditation_app/pages/signin_page.dart';
+import 'package:meditation_app/providers/MeditationProvider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MeditationProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+    final GoRouter _router = GoRouter(
+      initialLocation: '/signin',
+      routes: [
+        GoRoute(
+          path: '/signin',
+          builder: (context, state) => SigninPage(),
         ),
-      ),
+      ],
+    );
+
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      routerConfig: _router,
     );
   }
 }
