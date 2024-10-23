@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-class SigninPage extends StatelessWidget {
-  SigninPage({Key? key}) : super(key: key);
+class SignupPage extends StatelessWidget {
+  SignupPage({Key? key}) : super(key: key);
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Sign In"),
+        title: const Text("Sign Up"),
       ),
       resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            const Text("Sign in"),
+            const Text("Sign up"),
             TextField(
               decoration: const InputDecoration(hintText: 'Username'),
               controller: usernameController,
@@ -27,15 +27,14 @@ class SigninPage extends StatelessWidget {
               controller: passwordController,
               obscureText: true,
             ),
-            ElevatedButton(
-              onPressed: () {
-                //No logic for sign in yet
-              },
-              child: const Text("Sign in"),
+            TextField(
+              decoration: const InputDecoration(hintText: 'Confirm Password'),
+              controller: confirmPasswordController,
+              obscureText: true,
             ),
             ElevatedButton(
               onPressed: () {
-                context.push('/signup');
+                //No Sign up logic yet
               },
               child: const Text("Sign up"),
             ),
