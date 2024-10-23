@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_app/pages/edit_profile_page.dart';
+import 'package:meditation_app/pages/home_page.dart';
 import 'package:meditation_app/pages/signin_page.dart';
 import 'package:meditation_app/pages/signup_page.dart';
-import 'package:meditation_app/pages/sign_page.dart'; // Import SignPage
+import 'package:meditation_app/pages/sign_page.dart';
 import 'package:meditation_app/providers/MeditationProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +27,8 @@ class MyApp extends StatelessWidget {
       routes: [
         GoRoute(
           path: '/sign',
-          builder: (context, state) => SignPage(),
+          // builder: (context, state) => SignPage(), !!! comment for now while testing home !!!
+          builder: (context, state) => HomePage(),
         ),
         GoRoute(
           path: '/signin',
@@ -34,6 +37,10 @@ class MyApp extends StatelessWidget {
         GoRoute(
           path: '/signup',
           builder: (context, state) => SignupPage(),
+        ),
+        GoRoute(
+          path: '/edit-profile',
+          builder: (context, state) => EditProfilePage(),
         ),
       ],
     );
