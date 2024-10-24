@@ -8,48 +8,208 @@ class TipsPage extends StatefulWidget {
 }
 
 class _TipsPageState extends State<TipsPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _tipController = TextEditingController();
+  bool isSubmitting = false;
+  final String token = 'userTokenHere'; // Replace with actual token
+  final String currentUserId = 'currentUserId'; // Replace with actual user ID
+
   Future<List<dynamic>> fetchTips() async {
     try {
       Response response = await Client.dio.get('/tips');
       return response.data;
     } catch (e) {
-      return []; //Return empty list if there is an error
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> fetchMyTips() async {
+    try {
+      Response response = await Client.dio.get('/tips',
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+            },
+          ));
+      List<dynamic> allTips = response.data;
+      return allTips.where((tip) => tip['authorId'] == currentUserId).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  int _wordCount(String text) {
+    return text.split(' ').where((word) => word.isNotEmpty).length;
+  }
+
+  Future<void> submitTip() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    try {
+      setState(() {
+        isSubmitting = true;
+      });
+
+      await Client.dio.post(
+        '/tips',
+        data: {
+          'text': _tipController.text,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Tip created successfully')),
+      );
+      _tipController.clear();
+      setState(() {});
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create tip')),
+      );
+    } finally {
+      setState(() {
+        isSubmitting = false;
+      });
     }
   }
 
   @override
+  void dispose() {
+    _tipController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tips'),
-      ),
-      body: FutureBuilder<List<dynamic>>(
-        future: fetchTips(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            //if there is no tips available
-            return const Center(child: Text('No tips available.'));
-          } else {
-            final tips = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(12),
-              child: ListView.builder(
-                itemCount: tips.length,
-                itemBuilder: (context, index) {
-                  final tip = tips[index];
-                  return _buildTipCard(tip);
-                },
-              ),
-            );
-          }
-        },
+    return DefaultTabController(
+      length: 2, // Two tabs
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Tips'),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: "All Tips"),
+              Tab(text: "My Tips"),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildAllTipsTab(),
+            _buildMyTipsTab(),
+          ],
+        ),
       ),
     );
   }
 
-  // Card for each tip
+  Widget _buildAllTipsTab() {
+    return Column(
+      children: [
+        _buildTipForm(),
+        Expanded(
+          child: FutureBuilder<List<dynamic>>(
+            future: fetchTips(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('No tips available.'));
+              } else {
+                final tips = snapshot.data!;
+                return Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: ListView.builder(
+                    itemCount: tips.length,
+                    itemBuilder: (context, index) {
+                      final tip = tips[index];
+                      return _buildTipCard(tip);
+                    },
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMyTipsTab() {
+    return FutureBuilder<List<dynamic>>(
+      future: fetchMyTips(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No tips created by you.'));
+        } else {
+          final tips = snapshot.data!;
+          return Padding(
+            padding: const EdgeInsets.all(12),
+            child: ListView.builder(
+              itemCount: tips.length,
+              itemBuilder: (context, index) {
+                final tip = tips[index];
+                return _buildTipCard(tip);
+              },
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildTipForm() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: _tipController,
+              decoration: InputDecoration(
+                labelText: 'Create a Tip (Max 100 words)',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              maxLength: 100,
+              maxLines: null,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Tip cannot be empty';
+                }
+                if (_wordCount(value) > 100) {
+                  return 'Tip cannot exceed 100 words';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            isSubmitting
+                ? CircularProgressIndicator()
+                : Center(
+                    child: ElevatedButton(
+                      onPressed: submitTip,
+                      child: Text('Submit Tip'),
+                    ),
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildTipCard(dynamic tip) {
     return Card(
       elevation: 5,
