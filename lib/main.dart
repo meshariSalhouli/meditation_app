@@ -4,8 +4,8 @@ import 'package:meditation_app/pages/edit_profile_page.dart';
 import 'package:meditation_app/pages/home_page.dart';
 import 'package:meditation_app/pages/signin_page.dart';
 import 'package:meditation_app/pages/signup_page.dart';
-import 'package:meditation_app/pages/sign_page.dart';
 import 'package:meditation_app/providers/MeditationProvider.dart';
+import 'package:meditation_app/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -13,6 +13,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MeditationProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MyApp(),
     ),
@@ -23,10 +24,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GoRouter _router = GoRouter(
-      initialLocation: '/sign', //Main page
+      initialLocation: '/signin', //Main page
       routes: [
         GoRoute(
-          path: '/sign',
+          path: '/homepage',
           // builder: (context, state) => SignPage(), !!! comment for now while testing home !!!
           builder: (context, state) => HomePage(),
         ),
@@ -48,6 +49,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: _router,
+      theme: ThemeData(
+          inputDecorationTheme: InputDecorationTheme(
+              border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+      ))),
     );
   }
 }

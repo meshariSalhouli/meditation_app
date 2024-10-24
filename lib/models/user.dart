@@ -3,7 +3,11 @@ class User {
   String username;
   String password;
 
-  User({required this.username, required this.password, this.id});
+  User({
+    required this.username,
+    required this.password,
+    this.id,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json['id'],

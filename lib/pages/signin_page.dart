@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meditation_app/models/user.dart';
+import 'package:meditation_app/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class SigninPage extends StatelessWidget {
   SigninPage({Key? key}) : super(key: key);
@@ -28,8 +31,20 @@ class SigninPage extends StatelessWidget {
               obscureText: true,
             ),
             ElevatedButton(
-              onPressed: () {
-                //No logic for sign in yet
+              onPressed: () async {
+                var result =
+                    await Provider.of<AuthProvider>(context, listen: false)
+                        .signin(
+                            user: User(
+                                username: usernameController.text,
+                                password: passwordController.text));
+                if (result) {
+                  context.push("/homepage");
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("please sign up "),
+                  ));
+                }
               },
               child: const Text("Sign in"),
             ),
