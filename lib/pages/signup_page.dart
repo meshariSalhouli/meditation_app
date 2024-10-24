@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meditation_app/models/user.dart';
 import 'package:meditation_app/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+
+import 'package:image_picker/image_picker.dart';
 
 class SignupPage extends StatefulWidget {
   SignupPage({Key? key}) : super(key: key);
@@ -14,15 +18,14 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
-  String username = "";
-  String password = "";
-  String confirm = "";
 
   final usernameController = TextEditingController();
 
   final passwordController = TextEditingController();
 
   final confirmPasswordController = TextEditingController();
+  File? _image;
+  final _picker = ImagePicker();
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -46,7 +49,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter a username' : null,
-                onSaved: (value) => username = value!,
+                controller: usernameController,
               ),
               Gap(10),
               TextFormField(
@@ -60,7 +63,6 @@ class _SignupPageState extends State<SignupPage> {
                 controller: passwordController,
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter a password' : null,
-                onSaved: (value) => password = value!,
               ),
               Gap(10),
               TextFormField(
@@ -80,7 +82,6 @@ class _SignupPageState extends State<SignupPage> {
                   }
                   return null;
                 },
-                onSaved: (value) => confirm = value!,
               ),
               ElevatedButton(
                 onPressed: () {
@@ -88,14 +89,54 @@ class _SignupPageState extends State<SignupPage> {
                     _formKey.currentState!.save();
 
                     Provider.of<AuthProvider>(context, listen: false).signup(
-                        user: User(
-                            username: usernameController.text,
-                            password: passwordController.text));
+                        username: usernameController.text,
+                        password: passwordController.text,
+                        imagePath: _image?.path,
+                        defaultImage: "https://i.sstatic.net/l60Hf.png");
 
                     context.pop();
                   }
                 },
                 child: const Text("Sign Up"),
+              ),
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final XFile? image =
+                          await _picker.pickImage(source: ImageSource.gallery);
+                      setState(() {
+                        _image = File(image!.path);
+                      });
+                    },
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      margin: const EdgeInsets.only(top: 20),
+                      decoration: BoxDecoration(color: Colors.blue[200]),
+                      child: _image != null
+                          ? Image.file(
+                              _image!,
+                              width: 200.0,
+                              height: 200.0,
+                              fit: BoxFit.fitHeight,
+                            )
+                          : //TODO render default image
+                          Container(
+                              decoration:
+                                  BoxDecoration(color: Colors.blue[200]),
+                              width: 200,
+                              height: 200,
+                              child: Image.network(
+                                  "https://i.sstatic.net/l60Hf.png"),
+                            ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text("Image"),
+                  )
+                ],
               )
             ],
           ),

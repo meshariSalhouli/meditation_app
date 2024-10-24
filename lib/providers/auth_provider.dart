@@ -12,16 +12,28 @@ class AuthProvider extends ChangeNotifier {
 
   String token = "";
   late User user;
-  Future<void> signup({required User user}) async {
-    token = await AuthServices().signup(user: user);
+  Future<void> signup(
+      {required String username,
+      required String password,
+      String? imagePath,
+      String? defaultImage}) async {
+    token = await AuthServices().signup(
+        username: username,
+        password: password,
+        imagePath: imagePath,
+        defaultImage: defaultImage);
     setToken(token);
     print(token);
     notifyListeners();
   }
 
-  Future<bool> signin({required User user}) async {
+  Future<bool> signin({
+    required String username,
+    required String password,
+  }) async {
     try {
-      token = await AuthServices().signin(user: user);
+      token =
+          await AuthServices().signin(username: username, password: password);
       setToken(token);
       print(token);
       notifyListeners();
@@ -35,6 +47,16 @@ class AuthProvider extends ChangeNotifier {
   void setToken(String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(tokenKey, token);
+
+    // header
+    if (token.isNotEmpty && Jwt.getExpiryDate(token)!.isAfter(DateTime.now())) {
+      user = User.fromJson(Jwt.parseJwt(token));
+      Client.dio.options.headers = {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      };
+      return null;
+    }
+    user = User.fromJson(Jwt.parseJwt(token));
   }
 
   bool isAuth() {

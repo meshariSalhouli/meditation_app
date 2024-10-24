@@ -35,9 +35,8 @@ class SigninPage extends StatelessWidget {
                 var result =
                     await Provider.of<AuthProvider>(context, listen: false)
                         .signin(
-                            user: User(
-                                username: usernameController.text,
-                                password: passwordController.text));
+                            username: usernameController.text,
+                            password: passwordController.text);
                 if (result) {
                   context.push("/homepage");
                 } else {

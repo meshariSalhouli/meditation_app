@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 class HomePage extends StatelessWidget {
+  File? _image;
+  final _picker = ImagePicker();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,15 +22,25 @@ class HomePage extends StatelessWidget {
             Row(
               children: [
                 //Using image as a button
-                GestureDetector(
-                  onTap: () {
-                    context.push('/edit-profile');
-                  },
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage(
-                        'assets/Images/undraw_Pic_profile_re_7g2h.png'),
-                  ),
+                Container(
+                  width: 100,
+                  height: 100,
+                  margin: const EdgeInsets.only(top: 20),
+                  decoration: BoxDecoration(color: Colors.blue[200]),
+                  child: _image != null
+                      ? Image.file(
+                          _image!,
+                          width: 200.0,
+                          height: 200.0,
+                          fit: BoxFit.fitHeight,
+                        )
+                      : Container(
+                          decoration: BoxDecoration(color: Colors.blue[200]),
+                          width: 200,
+                          height: 200,
+                          child:
+                              Image.network("https://i.sstatic.net/l60Hf.png"),
+                        ),
                 ),
                 const SizedBox(width: 10),
                 const Text(

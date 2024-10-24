@@ -1,20 +1,20 @@
 class User {
-  int? id;
+  int id;
   String username;
-  String password;
+  String image;
 
   User({
     required this.username,
-    required this.password,
-    this.id,
+    required this.image,
+    required this.id,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json['id'],
         username: json['username'],
-        password: json['password'],
+        image: json['image'],
       );
 
   Map<String, dynamic> toJson() =>
-      <String, dynamic>{"id": id, "username": username, "password": password};
+      <String, dynamic>{"id": id, "username": username, "image": image};
 }
