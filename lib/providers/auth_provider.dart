@@ -34,7 +34,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       token =
           await AuthServices().signin(username: username, password: password);
-      setToken(token);
+      await setToken(token);
       print(token);
       notifyListeners();
 
@@ -44,7 +44,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void setToken(String token) async {
+  Future<void> setToken(String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(tokenKey, token);
 
