@@ -1,3 +1,45 @@
+import 'package:dio/dio.dart';
+import 'package:meditation_app/services/clinet.dart';
+
+class MeditationService {
+  Future<List<Meditation>> getMeditations() async {
+    List<Meditation> meditations = [];
+    try {
+      Response response = await Client.dio.get('/meditations');
+      meditations = (response.data as List)
+          .map((meditation) => Meditation.fromJson(meditation))
+          .toList();
+    } on DioError catch (error) {
+      print(error);
+    }
+    return meditations;
+  }
+}
+
+class Meditation {
+  final int id;
+  final String title;
+  final String author;
+
+  Meditation({required this.id, required this.title, required this.author});
+
+  factory Meditation.fromJson(Map<String, dynamic> json) {
+    return Meditation(
+      id: json['id'],
+      title: json['title'],
+      author: json['author'],
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
 // import 'dart:async';
 // import "package:dio/dio.dart";
 // import 'package:meditation_app/models/tip.dart';

@@ -4,6 +4,7 @@ import 'package:meditation_app/pages/edit_profile_page.dart';
 import 'package:meditation_app/pages/home_page.dart';
 import 'package:meditation_app/pages/signin_page.dart';
 import 'package:meditation_app/pages/signup_page.dart';
+import 'package:meditation_app/pages/tips_page.dart';
 import 'package:meditation_app/providers/MeditationProvider.dart';
 import 'package:meditation_app/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +43,10 @@ class MyApp extends StatelessWidget {
         GoRoute(
           path: '/edit-profile',
           builder: (context, state) => EditProfilePage(),
+        ),
+        GoRoute(
+          path: '/tips',
+          builder: (context, state) => TipsPage(),
         ),
       ],
     );

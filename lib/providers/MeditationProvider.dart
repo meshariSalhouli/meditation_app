@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 
-class MeditationProvider extends ChangeNotifier {
-  List<String> meditation = [];
+import 'package:flutter/material.dart';
+import 'package:meditation_app/services/meditation_services.dart';
 
-  String? _username;
-  String? _password;
+class MeditationProvider extends ChangeNotifier {
+  List<Meditation> meditations = [];
+
+  Future<void> getMeditations() async {
+    meditations = await MeditationService().getMeditations();
+    notifyListeners();
+  }
 }
+
+
+// class MeditationProvider extends ChangeNotifier {
+//   List<String> meditation = [];
+
+//   String? _username;
+//   String? _password;
+// }
+
+
 // Future<void> getPets() async {
 //     meditation = await MeditationProvider().getPets();
 //   }

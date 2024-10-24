@@ -38,7 +38,7 @@ class SigninPage extends StatelessWidget {
                             username: usernameController.text,
                             password: passwordController.text);
                 if (result) {
-                  context.push("/homepage");
+                  context.go("/homepage");
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text("please sign up "),

@@ -2,6 +2,8 @@ class Tip {
   int? id;
   String text;
   String author;
+  List<int> upVote = [];
+  List<int> downVote = [];
 
   Tip({this.id, required this.text, required this.author});
 
