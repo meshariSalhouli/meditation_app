@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meditation_app/pages/edit_profile_page.dart';
+import 'package:meditation_app/pages/exercises_page.dart';
+import 'package:meditation_app/pages/profile_page.dart';
 import 'package:meditation_app/pages/home_page.dart';
 import 'package:meditation_app/pages/signin_page.dart';
 import 'package:meditation_app/pages/signup_page.dart';
@@ -13,7 +14,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => MeditationProvider()),
+        ChangeNotifierProvider(create: (_) => Meditationprovider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MyApp(),
@@ -41,12 +42,16 @@ class MyApp extends StatelessWidget {
           builder: (context, state) => SignupPage(),
         ),
         GoRoute(
-          path: '/edit-profile',
-          builder: (context, state) => EditProfilePage(),
+          path: '/profilepage',
+          builder: (context, state) => ProfilePage(),
         ),
         GoRoute(
           path: '/tips',
           builder: (context, state) => TipsPage(),
+        ),
+        GoRoute(
+          path: '/exercises',
+          builder: (context, state) => ExercisesPage(),
         ),
       ],
     );

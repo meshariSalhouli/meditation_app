@@ -1,54 +1,39 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-import 'package:meditation_app/services/meditation_services.dart';
+class Meditationprovider extends ChangeNotifier {
+  // Profile fields
+  String? _username;
+  String? _email;
+  String? _password;
+  String? _profileImage; // Add profileImage field
+  bool _isLoggedIn = false;
 
-class MeditationProvider extends ChangeNotifier {
-  List<Meditation> meditations = [];
+  // Getters for profile fields
+  String? get username => _username;
+  String? get email => _email;
+  String? get password => _password;
+  String? get profileImage => _profileImage; // Getter for profile image
+  bool get isLoggedIn => _isLoggedIn;
 
-  Future<void> getMeditations() async {
-    meditations = await MeditationService().getMeditations();
-    notifyListeners();
+  // Method to update profile information
+  void updateProfile(
+    String username,
+    String email,
+    String password,
+  ) {
+    _username = username;
+    _email = email;
+    _password = password;
+    notifyListeners(); // Notify listeners that data has changed
+  }
+
+  // Method to log in and check credentials
+  bool login(String username, String password) {
+    if (_username == username && _password == password) {
+      _isLoggedIn = true;
+      notifyListeners();
+      return true;
+    }
+    return false;
   }
 }
-
-
-// class MeditationProvider extends ChangeNotifier {
-//   List<String> meditation = [];
-
-//   String? _username;
-//   String? _password;
-// }
-
-
-// Future<void> getPets() async {
-//     meditation = await MeditationProvider().getPets();
-//   }
-
-//   void createPet(Pet pet) async {
-//     Pet newPet = await PetServices().createPet(pet: pet);
-//     pets.insert(0, newPet);
-//     notifyListeners();
-//   }
-
-//   void updatePet(Pet pet) async {
-//     Pet newPet = await PetServices().updatePet(pet: pet);
-//     int index = pets.indexWhere((pet) => pet.id == newPet.id);
-//     pets[index] = newPet;
-//     notifyListeners();
-//   }
-
-//   void adoptPet(int petId) async {
-//     Pet newPet = await PetServices().adoptPet(petId: petId);
-//     int index = pets.indexWhere((pet) => pet.id == newPet.id);
-//     pets[index] = newPet;
-//     notifyListeners();
-//   }
-
-//   void deletePet(int petId) async {
-//     await PetServices().deletePet(petId: petId);
-//     pets.removeWhere((pet) => pet.id == petId);
-//     notifyListeners();
-//   }
-
-// }

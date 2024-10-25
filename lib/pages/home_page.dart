@@ -122,6 +122,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meditation_app/main.dart';
+import 'package:meditation_app/models/user.dart';
+import 'package:meditation_app/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   File? _image;
@@ -129,10 +133,16 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authprovider = context.read<AuthProvider>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home page"),
-      ),
+          title: const Text("Home page"),
+          leading: IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () {
+              context.push("/profilepage");
+            },
+          )),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -146,7 +156,7 @@ class HomePage extends StatelessWidget {
                   width: 100,
                   height: 100,
                   margin: const EdgeInsets.only(top: 20),
-                  decoration: BoxDecoration(color: Colors.blue[200]),
+                  decoration: BoxDecoration(color: Colors.white),
                   child: _image != null
                       ? Image.file(
                           _image!,
@@ -154,17 +164,17 @@ class HomePage extends StatelessWidget {
                           height: 200.0,
                           fit: BoxFit.fitHeight,
                         )
-                      : Container(
-                          decoration: BoxDecoration(color: Colors.blue[200]),
+                      : //TODO render default image
+                      Container(
+                          decoration: BoxDecoration(color: Colors.white),
                           width: 200,
                           height: 200,
-                          child:
-                              Image.network("https://i.sstatic.net/l60Hf.png"),
+                          child: Image.network(authprovider.user!.image),
                         ),
                 ),
                 const SizedBox(width: 10),
-                const Text(
-                  "Welcome, ",
+                Text(
+                  "Welcome,${authprovider.user!.username} ",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -202,9 +212,9 @@ class HomePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       elevation: 5,
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.lightbulb, size: 50, color: Colors.blue),
                           SizedBox(height: 10),
                           Text(
@@ -222,16 +232,16 @@ class HomePage extends StatelessWidget {
                   //Card 2 Yoga
                   GestureDetector(
                     onTap: () {
-                      GoRouter.of(context).go('/yoga');
+                      GoRouter.of(context).go('/exercises');
                     },
                     child: Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                       elevation: 5,
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.self_improvement,
                               size: 50, color: Colors.blue),
                           SizedBox(height: 10),
@@ -257,9 +267,9 @@ class HomePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       elevation: 5,
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.music_note, size: 50, color: Colors.blue),
                           SizedBox(height: 10),
                           Text(
@@ -284,9 +294,9 @@ class HomePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       elevation: 5,
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Icon(Icons.spa, size: 50, color: Colors.blue),
                           SizedBox(height: 10),
                           Text(

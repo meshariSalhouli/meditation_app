@@ -9,9 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
   static const tokenKey = "token";
-
+  User? user;
   String token = "";
-  late User user;
   Future<void> signup(
       {required String username,
       required String password,

@@ -2,37 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:meditation_app/services/clinet.dart';
 
-class TipsPage extends StatefulWidget {
+class ExercisesPage extends StatefulWidget {
   @override
-  _TipsPageState createState() => _TipsPageState();
+  _ExercisesPageState createState() => _ExercisesPageState();
 }
 
-class _TipsPageState extends State<TipsPage> {
+class _ExercisesPageState extends State<ExercisesPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _tipController = TextEditingController();
   bool isSubmitting = false;
   final String token = 'userTokenHere'; // Replace with actual token
   final String currentUserId = 'currentUserId'; // Replace with actual user ID
 
-  Future<List<dynamic>> fetchTips() async {
+  Future<List<dynamic>> fetchExercises() async {
     try {
-      Response response = await Client.dio.get('/tips');
+      Response response = await Client.dio.get('/yoga');
       return response.data;
     } catch (e) {
       return [];
     }
   }
 
-  Future<List<dynamic>> fetchMyTips() async {
+  Future<List<dynamic>> fetchMyExercises() async {
     try {
-      Response response = await Client.dio.get('/tips',
+      Response response = await Client.dio.get('/yoga',
           options: Options(
             headers: {
               'Authorization': 'Bearer $token',
             },
           ));
-      List<dynamic> allTips = response.data;
-      return allTips.where((tip) => tip['authorId'] == currentUserId).toList();
+      List<dynamic> allExercises = response.data;
+      return allExercises
+          .where((tip) => tip['authorId'] == currentUserId)
+          .toList();
     } catch (e) {
       return [];
     }
@@ -42,7 +44,7 @@ class _TipsPageState extends State<TipsPage> {
     return text.split(' ').where((word) => word.isNotEmpty).length;
   }
 
-  Future<void> submitTip() async {
+  Future<void> submitExercises() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -53,7 +55,7 @@ class _TipsPageState extends State<TipsPage> {
       });
 
       await Client.dio.post(
-        '/tips',
+        '/exersice',
         data: {
           'text': _tipController.text,
         },
@@ -92,17 +94,17 @@ class _TipsPageState extends State<TipsPage> {
       length: 2, // Two tabs
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Tips'),
+          title: const Text('exercises'),
           bottom: const TabBar(
             tabs: [
-              Tab(text: "All Tips"),
-              Tab(text: "My Tips"),
+              Tab(text: "All Exercises"),
+              Tab(text: "My Exercises"),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            _buildAllTipsTab(),
+            _buildAllExercisesTab(),
             _buildMyTipsTab(),
           ],
         ),
@@ -110,27 +112,27 @@ class _TipsPageState extends State<TipsPage> {
     );
   }
 
-  Widget _buildAllTipsTab() {
+  Widget _buildAllExercisesTab() {
     return Column(
       children: [
-        _buildTipForm(),
+        _buildExercisesForm(),
         Expanded(
           child: FutureBuilder<List<dynamic>>(
-            future: fetchTips(),
+            future: fetchExercises(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('No tips available.'));
+                return const Center(child: Text('No exercises available.'));
               } else {
-                final tips = snapshot.data!;
+                final exercises = snapshot.data!;
                 return Padding(
                   padding: const EdgeInsets.all(12),
                   child: ListView.builder(
-                    itemCount: tips.length,
+                    itemCount: exercises.length,
                     itemBuilder: (context, index) {
-                      final tip = tips[index];
-                      return _buildTipCard(tip);
+                      final exercise = exercises[index];
+                      return _buildexerciseCard(exercise);
                     },
                   ),
                 );
@@ -144,21 +146,21 @@ class _TipsPageState extends State<TipsPage> {
 
   Widget _buildMyTipsTab() {
     return FutureBuilder<List<dynamic>>(
-      future: fetchMyTips(),
+      future: fetchMyExercises(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text('No tips created by you.'));
         } else {
-          final tips = snapshot.data!;
+          final exercises = snapshot.data!;
           return Padding(
             padding: const EdgeInsets.all(12),
             child: ListView.builder(
-              itemCount: tips.length,
+              itemCount: exercises.length,
               itemBuilder: (context, index) {
-                final tip = tips[index];
-                return _buildTipCard(tip);
+                final exercise = exercises[index];
+                return _buildexerciseCard(exercise);
               },
             ),
           );
@@ -167,7 +169,7 @@ class _TipsPageState extends State<TipsPage> {
     );
   }
 
-  Widget _buildTipForm() {
+  Widget _buildExercisesForm() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -200,7 +202,7 @@ class _TipsPageState extends State<TipsPage> {
                 ? CircularProgressIndicator()
                 : Center(
                     child: ElevatedButton(
-                      onPressed: submitTip,
+                      onPressed: submitExercises,
                       child: Text('Submit Tip'),
                     ),
                   ),
@@ -210,7 +212,7 @@ class _TipsPageState extends State<TipsPage> {
     );
   }
 
-  Widget _buildTipCard(dynamic tip) {
+  Widget _buildexerciseCard(dynamic tip) {
     return Card(
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

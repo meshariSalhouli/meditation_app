@@ -1,3 +1,6 @@
+import 'package:dio/dio.dart';
+import 'package:meditation_app/services/clinet.dart';
+
 class Tip {
   int? id;
   String text;
@@ -15,4 +18,12 @@ class Tip {
 
   Map<String, dynamic> toJson() =>
       <String, dynamic>{"id": id, "text": text, "author": author};
+
+  Future<void> deleteTip({required int tipId}) async {
+    try {
+      await Client.dio.delete('/tip/${tipId}');
+    } on DioError catch (error) {
+      print(error);
+    }
+  }
 }

@@ -113,7 +113,7 @@ class _SignupPageState extends State<SignupPage> {
                       width: 100,
                       height: 100,
                       margin: const EdgeInsets.only(top: 20),
-                      decoration: BoxDecoration(color: Colors.blue[200]),
+                      decoration: BoxDecoration(color: Colors.white),
                       child: _image != null
                           ? Image.file(
                               _image!,
@@ -123,8 +123,7 @@ class _SignupPageState extends State<SignupPage> {
                             )
                           : //TODO render default image
                           Container(
-                              decoration:
-                                  BoxDecoration(color: Colors.blue[200]),
+                              decoration: BoxDecoration(color: Colors.white),
                               width: 200,
                               height: 200,
                               child: Image.network(
