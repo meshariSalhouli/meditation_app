@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meditation_app/providers/exercisesProvider';
+import 'package:meditation_app/providers/exercisesProvider.dart';
 import 'package:provider/provider.dart';
 
 class ExercisePage extends StatefulWidget {
