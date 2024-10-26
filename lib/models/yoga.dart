@@ -1,25 +1,21 @@
 class Exercise {
-  int? id;
-  String title;
-  String file;
-  bool finished;
+  final int id;
+  final String title;
+  final String file;
+  final bool finished;
 
   Exercise(
-      {this.id,
+      {required this.id,
       required this.title,
       required this.file,
       required this.finished});
 
-  factory Exercise.fromJson(Map<String, dynamic> json) => Exercise(
+  factory Exercise.fromJson(Map<String, dynamic> json) {
+    return Exercise(
       id: json['id'],
-      title: json['text'],
+      title: json['title'],
       file: json['file'],
-      finished: json["finished"]);
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        "id": id,
-        "text": title,
-        "file": file,
-        "finished": finished
-      };
+      finished: json['finished'],
+    );
+  }
 }

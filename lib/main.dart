@@ -8,6 +8,7 @@ import 'package:meditation_app/pages/signup_page.dart';
 import 'package:meditation_app/pages/tips_page.dart';
 import 'package:meditation_app/providers/MeditationProvider.dart';
 import 'package:meditation_app/providers/auth_provider.dart';
+import 'package:meditation_app/providers/exercisesProvider';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -16,6 +17,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => Meditationprovider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ExerciseProvider())
       ],
       child: MyApp(),
     ),
@@ -51,7 +53,7 @@ class MyApp extends StatelessWidget {
         ),
         GoRoute(
           path: '/exercises',
-          builder: (context, state) => ExercisesPage(),
+          builder: (context, state) => ExerciseProvider(),
         ),
       ],
     );
