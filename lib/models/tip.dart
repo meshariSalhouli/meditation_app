@@ -3,8 +3,8 @@ import 'package:meditation_app/services/clinet.dart';
 
 class Tip {
   int? id;
-  String text;
-  String author;
+  String? text;
+  String? author;
   List<int> upVote = [];
   List<int> downVote = [];
 
@@ -12,8 +12,8 @@ class Tip {
 
   factory Tip.fromJson(Map<String, dynamic> json) => Tip(
         id: json['id'],
-        text: json['text'],
-        author: json['author'],
+        text: json['text'] as String?,
+        author: json['author'] as String?,
       );
 
   Map<String, dynamic> toJson() =>

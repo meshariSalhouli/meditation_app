@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:meditation_app/services/clinet.dart';
+import 'package:provider/provider.dart';
+import 'package:meditation_app/providers/auth_provider.dart';
 
 class TipsPage extends StatefulWidget {
   @override
@@ -11,8 +13,6 @@ class _TipsPageState extends State<TipsPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _tipController = TextEditingController();
   bool isSubmitting = false;
-  final String token = 'userTokenHere'; // Replace with actual token
-  final String currentUserId = 'currentUserId'; // Replace with actual user ID
 
   Future<List<dynamic>> fetchTips() async {
     try {
@@ -23,16 +23,11 @@ class _TipsPageState extends State<TipsPage> {
     }
   }
 
-  Future<List<dynamic>> fetchMyTips() async {
+  Future<List<dynamic>> fetchMyTips(String userId) async {
     try {
-      Response response = await Client.dio.get('/tips',
-          options: Options(
-            headers: {
-              'Authorization': 'Bearer $token',
-            },
-          ));
+      Response response = await Client.dio.get('/tips');
       List<dynamic> allTips = response.data;
-      return allTips.where((tip) => tip['authorId'] == currentUserId).toList();
+      return allTips.where((tip) => tip['authorId'] == userId).toList();
     } catch (e) {
       return [];
     }
@@ -42,25 +37,17 @@ class _TipsPageState extends State<TipsPage> {
     return text.split(' ').where((word) => word.isNotEmpty).length;
   }
 
-  Future<void> submitTip() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+  Future<void> submitTip(AuthProvider authProvider) async {
+    if (!_formKey.currentState!.validate()) return;
 
     try {
-      setState(() {
-        isSubmitting = true;
-      });
+      setState(() => isSubmitting = true);
 
       await Client.dio.post(
         '/tips',
-        data: {
-          'text': _tipController.text,
-        },
+        data: {'text': _tipController.text},
         options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-          },
+          headers: {'Authorization': 'Bearer ${authProvider.token}'},
         ),
       );
 
@@ -74,9 +61,7 @@ class _TipsPageState extends State<TipsPage> {
         SnackBar(content: Text('Failed to create tip')),
       );
     } finally {
-      setState(() {
-        isSubmitting = false;
-      });
+      setState(() => isSubmitting = false);
     }
   }
 
@@ -88,32 +73,36 @@ class _TipsPageState extends State<TipsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2, // Two tabs
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Tips'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: "All Tips"),
-              Tab(text: "My Tips"),
-            ],
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        return DefaultTabController(
+          length: 2,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Tips'),
+              bottom: TabBar(
+                tabs: [
+                  Tab(text: "All Tips"),
+                  Tab(text: "My Tips"),
+                ],
+              ),
+            ),
+            body: TabBarView(
+              children: [
+                _buildAllTipsTab(authProvider),
+                _buildMyTipsTab(authProvider),
+              ],
+            ),
           ),
-        ),
-        body: TabBarView(
-          children: [
-            _buildAllTipsTab(),
-            _buildMyTipsTab(),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildAllTipsTab() {
+  Widget _buildAllTipsTab(AuthProvider authProvider) {
     return Column(
       children: [
-        _buildTipForm(),
+        _buildTipForm(authProvider),
         Expanded(
           child: FutureBuilder<List<dynamic>>(
             future: fetchTips(),
@@ -142,9 +131,9 @@ class _TipsPageState extends State<TipsPage> {
     );
   }
 
-  Widget _buildMyTipsTab() {
+  Widget _buildMyTipsTab(AuthProvider authProvider) {
     return FutureBuilder<List<dynamic>>(
-      future: fetchMyTips(),
+      future: fetchMyTips(authProvider.user?.id?.toString() ?? ''),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -167,7 +156,7 @@ class _TipsPageState extends State<TipsPage> {
     );
   }
 
-  Widget _buildTipForm() {
+  Widget _buildTipForm(AuthProvider authProvider) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -200,7 +189,7 @@ class _TipsPageState extends State<TipsPage> {
                 ? CircularProgressIndicator()
                 : Center(
                     child: ElevatedButton(
-                      onPressed: submitTip,
+                      onPressed: () => submitTip(authProvider),
                       child: Text('Submit Tip'),
                     ),
                   ),
@@ -222,7 +211,7 @@ class _TipsPageState extends State<TipsPage> {
           children: [
             Text(
               tip['text'],
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,

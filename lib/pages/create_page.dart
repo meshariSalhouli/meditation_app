@@ -28,11 +28,10 @@ class _CreateTipPageState extends State<CreateTipPage> {
       );
 
       if (response.statusCode == 200) {
-        // Handle success (e.g., show a success message or navigate back)
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Tip created successfully!')),
         );
-        _tipController.clear(); // Clear the input field
+        _tipController.clear();
       }
     } on DioError catch (e) {
       // Handle error (e.g., show an error message)
