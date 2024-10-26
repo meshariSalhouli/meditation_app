@@ -210,7 +210,7 @@ class _TipsPageState extends State<TipsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              tip['text'],
+              tip['text'] ?? '', // Use an empty string if text is null
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -219,7 +219,7 @@ class _TipsPageState extends State<TipsPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'By ${tip['author']}',
+              'By ${tip['author'] ?? 'Unknown'}', // Provide a default author
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -234,14 +234,14 @@ class _TipsPageState extends State<TipsPage> {
                     Icon(Icons.thumb_up, color: Colors.blueAccent),
                     const SizedBox(width: 4),
                     Text(
-                      '${tip['upvotes'].length}',
+                      '${tip['upvotes']?.length ?? 0}', // Use 0 if upvotes is null
                       style: TextStyle(fontSize: 16, color: Colors.blueAccent),
                     ),
                     const SizedBox(width: 20),
                     Icon(Icons.thumb_down, color: Colors.deepOrange),
                     const SizedBox(width: 4),
                     Text(
-                      '${tip['downvotes'].length}',
+                      '${tip['downvotes']?.length ?? 0}', // Use 0 if downvotes is null
                       style: TextStyle(fontSize: 16, color: Colors.deepOrange),
                     ),
                   ],
