@@ -27,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _usernameController.text = meditationProvider.username ?? '';
     _emailController.text = meditationProvider.email ?? '';
     _passwordController.text = meditationProvider.password ?? '';
-    "assets/images/default.png"; // Load saved profile image
+    // Load saved profile image (add logic if necessary)
   }
 
   void _saveProfile(BuildContext context) {
@@ -35,10 +35,12 @@ class _ProfilePageState extends State<ProfilePage> {
         Provider.of<Meditationprovider>(context, listen: false);
 
     // Save the updated profile information
-    meditationProvider.updateProfile(_usernameController.text,
-        _emailController.text, _passwordController.text
-        // Save the selected profile image
-        );
+    meditationProvider.updateProfile(
+      _usernameController.text,
+      _emailController.text,
+      _passwordController.text,
+      // Save the selected profile image (add logic if necessary)
+    );
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Profile updated successfully')),
@@ -51,7 +53,6 @@ class _ProfilePageState extends State<ProfilePage> {
     final authprovider = context.read<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Profile'),
         leading: IconButton(
@@ -62,7 +63,18 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Padding(
+      body: Container(
+        // Add gradient background
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.orange,
+              Colors.yellow
+            ], // Define your gradient colors
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Column(

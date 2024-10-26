@@ -113,11 +113,20 @@ class _TipsPageState extends State<TipsPage> {
                 ],
               ),
             ),
-            body: TabBarView(
-              children: [
-                _buildAllTipsTab(authProvider),
-                _buildMyTipsTab(authProvider),
-              ],
+            body: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.orange, Colors.yellow],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: TabBarView(
+                children: [
+                  _buildAllTipsTab(authProvider),
+                  _buildMyTipsTab(authProvider),
+                ],
+              ),
             ),
           ),
         );
