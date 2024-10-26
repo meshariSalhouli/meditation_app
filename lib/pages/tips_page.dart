@@ -23,11 +23,16 @@ class _TipsPageState extends State<TipsPage> {
     }
   }
 
-  Future<List<dynamic>> fetchMyTips(String userId) async {
+  Future<List<dynamic>> fetchMyTips(dynamic userId) async {
     try {
       Response response = await Client.dio.get('/tips');
       List<dynamic> allTips = response.data;
-      return allTips.where((tip) => tip['authorId'] == userId).toList();
+
+      List<dynamic> myTips = allTips.where((tip) {
+        return tip['authorId'] == userId;
+      }).toList();
+
+      return myTips;
     } catch (e) {
       return [];
     }
@@ -62,6 +67,27 @@ class _TipsPageState extends State<TipsPage> {
       );
     } finally {
       setState(() => isSubmitting = false);
+    }
+  }
+
+  Future<void> voteTip(String tipId, bool isUpvote) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    try {
+      await Client.dio.put(
+        isUpvote ? '/tips/$tipId/upvote' : '/tips/$tipId/downvote',
+        options: Options(
+          headers: {'Authorization': 'Bearer ${authProvider.token}'},
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Vote recorded successfully')),
+      );
+      setState(() {}); // Refresh the state to show updated votes
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to record vote')),
+      );
     }
   }
 
@@ -113,6 +139,15 @@ class _TipsPageState extends State<TipsPage> {
                 return const Center(child: Text('No tips available.'));
               } else {
                 final tips = snapshot.data!;
+                // Sort tips by votes (upvotes - downvotes)
+                tips.sort((a, b) {
+                  int scoreA =
+                      a['upvotes']?.length ?? 0 - a['downvotes']?.length ?? 0;
+                  int scoreB =
+                      b['upvotes']?.length ?? 0 - b['downvotes']?.length ?? 0;
+                  return scoreB.compareTo(scoreA); // Sort descending
+                });
+
                 return Padding(
                   padding: const EdgeInsets.all(12),
                   child: ListView.builder(
@@ -133,10 +168,12 @@ class _TipsPageState extends State<TipsPage> {
 
   Widget _buildMyTipsTab(AuthProvider authProvider) {
     return FutureBuilder<List<dynamic>>(
-      future: fetchMyTips(authProvider.user?.id?.toString() ?? ''),
+      future: fetchMyTips(authProvider.user?.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error loading tips: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text('No tips created by you.'));
         } else {
@@ -200,6 +237,9 @@ class _TipsPageState extends State<TipsPage> {
   }
 
   Widget _buildTipCard(dynamic tip) {
+    int upvotes = tip['upvotes']?.length ?? 0;
+    int downvotes = tip['downvotes']?.length ?? 0;
+
     return Card(
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -210,7 +250,7 @@ class _TipsPageState extends State<TipsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              tip['text'] ?? '', // Use an empty string if text is null
+              tip['text'] ?? '',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -219,7 +259,7 @@ class _TipsPageState extends State<TipsPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'By ${tip['author'] ?? 'Unknown'}', // Provide a default author
+              'By ${tip['author'] ?? 'Unknown'}',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[600],
@@ -231,18 +271,24 @@ class _TipsPageState extends State<TipsPage> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.thumb_up, color: Colors.blueAccent),
+                    IconButton(
+                      icon: Icon(Icons.thumb_up, color: Colors.blueAccent),
+                      onPressed: () => voteTip(tip['id'], true), // Upvote
+                    ),
                     const SizedBox(width: 4),
                     Text(
-                      '${tip['upvotes']?.length ?? 0}', // Use 0 if upvotes is null
+                      '$upvotes',
                       style: TextStyle(fontSize: 16, color: Colors.blueAccent),
                     ),
-                    const SizedBox(width: 20),
-                    Icon(Icons.thumb_down, color: Colors.deepOrange),
+                    const SizedBox(width: 16),
+                    IconButton(
+                      icon: Icon(Icons.thumb_down, color: Colors.redAccent),
+                      onPressed: () => voteTip(tip['id'], false), // Downvote
+                    ),
                     const SizedBox(width: 4),
                     Text(
-                      '${tip['downvotes']?.length ?? 0}', // Use 0 if downvotes is null
-                      style: TextStyle(fontSize: 16, color: Colors.deepOrange),
+                      '$downvotes',
+                      style: TextStyle(fontSize: 16, color: Colors.redAccent),
                     ),
                   ],
                 ),
