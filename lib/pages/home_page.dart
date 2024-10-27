@@ -120,7 +120,7 @@ class HomePage extends StatelessWidget {
                     // Card 2 Yoga
                     GestureDetector(
                       onTap: () {
-                        GoRouter.of(context).go('/exercises');
+                        GoRouter.of(context).push('/exercises');
                       },
                       child: Card(
                         shape: RoundedRectangleBorder(

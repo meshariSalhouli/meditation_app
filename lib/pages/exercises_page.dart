@@ -25,14 +25,14 @@ class _ExercisePageState extends State<ExercisePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Exercise Videos'),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.white,
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.white, Colors.black],
+            colors: [Colors.orange, Colors.yellow],
           ),
         ),
         child: exerciseProvider.isLoading
@@ -45,7 +45,7 @@ class _ExercisePageState extends State<ExercisePage> {
                     title: Text(
                       exercise.title,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
                     trailing: const Icon(
